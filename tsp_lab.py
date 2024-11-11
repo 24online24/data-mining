@@ -92,7 +92,7 @@ def g_a(dim_pop, nr_gen):
 
 
 start_time = datetime.now()
-best_crom, dist = g_a(dim_pop=10000, nr_gen=10000)
+best_crom, dist = g_a(dim_pop=1000, nr_gen=1000)
 print(f"Time: {datetime.now() - start_time}")
 
 print(f"Cea mai buna ruta gasita: {best_crom} are distanta de {dist}")
