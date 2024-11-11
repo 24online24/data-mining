@@ -1,6 +1,7 @@
 from datetime import datetime
 import numpy as np
 import random
+import heapq
 
 DISTANTE = np.array([
     [0, 10, 15, 20, 25, 30, 35, 40, 45, 50],
@@ -29,9 +30,10 @@ class Cromozon:
         print(self.traseu[-1], '-', self.traseu[0], ':', DISTANTE[self.traseu[lung-1]][self.traseu[0]])
 
     def calculeaza_fitness(self):
+        d = DISTANTE
         lung = len(self.traseu)
-        lung_traseu = sum([DISTANTE[self.traseu[i], self.traseu[i+1]] for i in range(lung-1)])
-        lung_traseu += DISTANTE[self.traseu[lung-1], self.traseu[0]]
+        lung_traseu = sum([d[self.traseu[i], self.traseu[i+1]] for i in range(lung-1)])
+        lung_traseu += d[self.traseu[lung-1], self.traseu[0]]
         return lung_traseu
 
     def crossover(self, p2):
@@ -68,18 +70,17 @@ def g_a(dim_pop, nr_gen):
     populatie = [Cromozon() for _ in range(dim_pop)]
 
     for _ in range(nr_gen):
-        populatie = sorted(populatie, key=lambda x: x.fitness, reverse=False)
-        # print(f"Generatie {gen}. Cea mai buna ruta gasita: {crom.traseu} cu distanta de {crom.fitness}")
+        top_two = heapq.nsmallest(2, populatie, key=lambda x: x.fitness)
+        urm_pop = list(top_two)
 
-        urm_pop = populatie[:2]
-
+        best_k = heapq.nsmallest(10, populatie, key=lambda x: x.fitness)
         for _ in range(dim_pop // 2):
-            p1, p2 = random.sample(populatie[:10], 2)
+            p1, p2 = random.sample(best_k, 2)
             copil1 = p1.crossover(p2)
             copil2 = p2.crossover(p1)
             copil1.mutatie()
             copil2.mutatie()
-            urm_pop += [copil1, copil2]
+            urm_pop.extend([copil1, copil2])
 
         populatie = urm_pop
 
