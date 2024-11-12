@@ -1,4 +1,6 @@
 from datetime import datetime
+from itertools import product
+import multiprocessing as mp
 import numpy as np
 import random
 
@@ -224,24 +226,39 @@ def g_a(dim_pop, nr_gen, selectie, crossover):
 file_path = 'TSP/vm1084.tsp'
 DISTANTE = citeste_instanta_tsp(file_path)
 
+
+def run_single_ga(args):
+    selection, crossover = args
+    start_time = datetime.now()
+    best_traseu, dist = g_a(dim_pop=100, nr_gen=500, selectie=selection_functions[selection], crossover=crossover_functions[crossover])
+    time = datetime.now() - start_time
+    return selection, crossover, dist, time
+
+
 if __name__ == '__main__':
     results = []
     execution_start = datetime.now()
-    for selection in selection_functions:
-        for crossover in crossover_functions:
-            distances = []
-            times = []
-            for _ in range(3):
-                start_time = datetime.now()
-                best_traseu, dist = g_a(dim_pop=100, nr_gen=500, selectie=selection_functions[selection], crossover=crossover_functions[crossover])
-                distances.append(dist)
-                times.append(datetime.now() - start_time)
-            results.append((
-                selection,
-                crossover,
-                round(np.mean(distances), 2),
-                round(np.mean([t.total_seconds() for t in times]), 2)
-            ))
+
+    combinations = list(product(selection_functions.keys(), crossover_functions.keys()))
+
+    with mp.Pool(processes=mp.cpu_count()) as pool:
+        runs = pool.map(run_single_ga, combinations)
+
+    grouped_results = {}
+    for selection, crossover, dist, time in runs:
+        key = (selection, crossover)
+        if key not in grouped_results:
+            grouped_results[key] = {'distante': [], 'timpi': []}
+        grouped_results[key]['distante'].append(dist)
+        grouped_results[key]['timpi'].append(time.total_seconds())
+
+    results = [(
+        selection,
+        crossover,
+        round(np.mean(data['distante']), 2),
+        round(np.mean(data['timpi']), 2))
+        for (selection, crossover), data in grouped_results.items()
+    ]
 
     results.sort(key=lambda x: x[2])
     print("\nGenetic Algorithm Results")
