@@ -3,16 +3,6 @@ import numpy as np
 import random
 
 
-def one_point_crossover(self, p2):
-    lung = len(self.traseu)
-    punct_crossover = random.randint(2, lung - 2)
-    traseu_copil = self.traseu[:punct_crossover]
-    for oras in p2.traseu:
-        if oras not in traseu_copil:
-            traseu_copil.append(oras)
-    return traseu_copil
-
-
 def two_point_crossover(self, p2):
     lung = len(self.traseu)
     st, dr = sorted(random.sample(range(lung), 2))
@@ -65,7 +55,6 @@ def ordered_crossover(self, p2):
 
 
 crossover_functions = {
-    'one_point': one_point_crossover,
     'two_point': two_point_crossover,
     'uniform': uniform_crossover,
     'ordered': ordered_crossover
@@ -189,7 +178,7 @@ def g_a(dim_pop, nr_gen, selectie, crossover):
     return best_cromozom.traseu, best_cromozom.fitness
 
 
-file_path = 'TSP/u574.tsp'
+file_path = 'TSP/vm1084.tsp'
 DISTANTE = citeste_instanta_tsp(file_path)
 
 if __name__ == '__main__':
