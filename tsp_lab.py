@@ -25,13 +25,13 @@ class Cromozom:
     def afiseaza(self):
         lung = len(self.traseu)
         for i in range(lung-1):
-            print(self.traseu[i], '-', self.traseu[i+1], ':', DISTANTE[self.traseu[i]][self.traseu[i+1]])
-        print(self.traseu[-1], '-', self.traseu[0], ':', DISTANTE[self.traseu[lung-1]][self.traseu[0]])
+            print(self.traseu[i], '-', self.traseu[i+1], ':', DISTANTE[self.traseu[i], self.traseu[i+1]])
+        print(self.traseu[-1], '-', self.traseu[0], ':', DISTANTE[self.traseu[-1], self.traseu[0]])
 
     def calculeaza_fitness(self):
         lung = len(self.traseu)
-        lung_traseu = sum([DISTANTE[self.traseu[i], self.traseu[i+1]] for i in range(lung-1)])
-        lung_traseu += DISTANTE[self.traseu[lung-1], self.traseu[0]]
+        lung_traseu = sum(DISTANTE[self.traseu[i], self.traseu[i + 1]] for i in range(lung - 1))
+        lung_traseu += DISTANTE[self.traseu[-1], self.traseu[0]]
         return lung_traseu
 
     def crossover(self, p2):
@@ -55,24 +55,20 @@ class Cromozom:
         lung = len(self.traseu)
         for i in range(lung):
             if random.random() < probab:
-                j = random.randint(0, lung-1)
+                j = random.randint(0, lung - 1)
                 self.traseu[i], self.traseu[j] = self.traseu[j], self.traseu[i]
-
         self.fitness = self.calculeaza_fitness()
 
     def __str__(self):
-        return f"Traseu: {self.traseu}, Distanta: {self.fitness}"
+        return f"Traseu: {self.traseu}, Distanță: {self.fitness}"
 
 
 def g_a(dim_pop, nr_gen):
     populatie = [Cromozom() for _ in range(dim_pop)]
-
     for _ in range(nr_gen):
         populatie = sorted(populatie, key=lambda x: x.fitness, reverse=False)
         # print(f"Generatie {gen}. Cea mai buna ruta gasita: {crom.traseu} cu distanta de {crom.fitness}")
-
         urm_pop = populatie[:2]
-
         for _ in range(dim_pop // 2):
             p1, p2 = random.sample(populatie[:10], 2)
             copil1 = p1.crossover(p2)
@@ -80,18 +76,15 @@ def g_a(dim_pop, nr_gen):
             copil1.mutatie()
             copil2.mutatie()
             urm_pop += [copil1, copil2]
-
         populatie = urm_pop
-
-    print("-------------------------------")
+    print('--------------------------')
 
     best_cromozom = min(populatie, key=lambda x: x.fitness)
-    best_cromozom.afiseaza()
     return best_cromozom.traseu, best_cromozom.fitness
 
 
 start_time = datetime.now()
-best_crom, dist = g_a(dim_pop=1000, nr_gen=2000)
+best_traseu, dist = g_a(dim_pop=1000, nr_gen=2000)
 print(f"Time: {datetime.now() - start_time}")
 
-print(f"Cea mai buna ruta gasita: {best_crom} are distanta de {dist}")
+print(f"Cea mai bună rută găsită: {best_traseu} \nare distanța {dist}")
