@@ -34,7 +34,7 @@ def citeste_instanta_tsp(file_path):
     return dist_matrix
 
 
-file_path = 'd1291.tsp'
+file_path = 'TSP/d1291.tsp'
 
 dist = citeste_instanta_tsp(file_path)
 
