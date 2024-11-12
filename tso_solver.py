@@ -72,10 +72,6 @@ crossover_functions = {
 }
 
 
-def random_selection(populatie, gen=None):
-    return random.choice(populatie)
-
-
 def roulette_wheel_selection(populatie, gen=None):
     fitness_total = sum(1.0 / cromozom.fitness/cromozom.fitness for cromozom in populatie)
     punct_de_selectie = random.uniform(0, fitness_total)
@@ -104,37 +100,10 @@ def rank_selection(populatie, gen=None):
             return cromozom
 
 
-def boltzmann_selection(populatie, gen):
-    def normalizeaza_fitness(valori_fitness):
-        min_fitness = min(valori_fitness)
-        max_fitness = max(valori_fitness)
-        return [1 - (f - min_fitness) / (max_fitness - min_fitness) for f in valori_fitness]
-
-    n_gen = 100
-    t_init = 10
-    t_fin = 0.1
-    delta = (t_init-t_fin)/n_gen
-    temperatura = t_init - delta * gen
-    fitness_values = [cromozom.fitness for cromozom in populatie]
-    fitness_normalizat = normalizeaza_fitness(fitness_values)
-    probabilitati = [np.exp(-f / temperatura) for f in fitness_normalizat]
-
-    suma_probabilitati = sum(probabilitati)
-    probabilitati = [p / suma_probabilitati for p in probabilitati]
-    punct_selectie = random.random()
-    suma_cumulata = 0
-    for cromozom, probabilitate in zip(populatie, probabilitati):
-        suma_cumulata += probabilitate
-        if suma_cumulata >= punct_selectie:
-            return cromozom
-
-
 selection_functions = {
-    'random': random_selection,
     'roulette': roulette_wheel_selection,
     'tournament': tournament_selection,
     'rank': rank_selection,
-    'boltzmann': boltzmann_selection
 }
 
 
@@ -220,7 +189,7 @@ def g_a(dim_pop, nr_gen, selectie, crossover):
     return best_cromozom.traseu, best_cromozom.fitness
 
 
-file_path = 'TSP/vm1084.tsp'
+file_path = 'TSP/u574.tsp'
 DISTANTE = citeste_instanta_tsp(file_path)
 
 if __name__ == '__main__':
