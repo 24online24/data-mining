@@ -157,7 +157,6 @@ def citeste_instanta_tsp(file_path):
                 _, x, y = parts
                 coordonate.append((float(x), float(y)))
     n = len(coordonate)
-    print(f'Numarul orașelor: {n}')
     dist_matrix = np.zeros((n, n), dtype=int)
     for i in range(n):
         for j in range(i + 1, n):
@@ -232,33 +231,17 @@ def run_single_ga(args):
     start_time = datetime.now()
     best_traseu, dist = g_a(dim_pop=100, nr_gen=500, selectie=selection_functions[selection], crossover=crossover_functions[crossover])
     time = datetime.now() - start_time
-    return selection, crossover, dist, time
+    return selection, crossover, dist, time.total_seconds()
 
 
 if __name__ == '__main__':
-    results = []
+    print(f'Numarul orașelor: {len(DISTANTE)}')
     execution_start = datetime.now()
 
     combinations = list(product(selection_functions.keys(), crossover_functions.keys()))
 
     with mp.Pool(processes=mp.cpu_count()) as pool:
-        runs = pool.map(run_single_ga, combinations)
-
-    grouped_results = {}
-    for selection, crossover, dist, time in runs:
-        key = (selection, crossover)
-        if key not in grouped_results:
-            grouped_results[key] = {'distante': [], 'timpi': []}
-        grouped_results[key]['distante'].append(dist)
-        grouped_results[key]['timpi'].append(time.total_seconds())
-
-    results = [(
-        selection,
-        crossover,
-        round(np.mean(data['distante']), 2),
-        round(np.mean(data['timpi']), 2))
-        for (selection, crossover), data in grouped_results.items()
-    ]
+        results = pool.map(run_single_ga, combinations)
 
     results.sort(key=lambda x: x[2])
     print("\nGenetic Algorithm Results")

@@ -155,7 +155,6 @@ def citeste_instanta_tsp(file_path):
                 _, x, y = parts
                 coordonate.append((float(x), float(y)))
     n = len(coordonate)
-    print(f'Numarul orașelor: {n}')
     dist_matrix = np.zeros((n, n), dtype=int)
     for i in range(n):
         for j in range(i + 1, n):
@@ -225,22 +224,18 @@ file_path = 'TSP/vm1084.tsp'
 DISTANTE = citeste_instanta_tsp(file_path)
 
 if __name__ == '__main__':
+    print(f'Numarul orașelor: {len(DISTANTE)}')
     results = []
     execution_start = datetime.now()
     for selection in selection_functions:
         for crossover in crossover_functions:
-            distances = []
-            times = []
-            for _ in range(3):
-                start_time = datetime.now()
-                best_traseu, dist = g_a(dim_pop=100, nr_gen=500, selectie=selection_functions[selection], crossover=crossover_functions[crossover])
-                distances.append(dist)
-                times.append(datetime.now() - start_time)
+            start_time = datetime.now()
+            best_traseu, dist = g_a(dim_pop=100, nr_gen=500, selectie=selection_functions[selection], crossover=crossover_functions[crossover])
             results.append((
                 selection,
                 crossover,
-                round(np.mean(distances), 2),
-                round(np.mean([t.total_seconds() for t in times]), 2)
+                dist,
+                (datetime.now() - start_time).total_seconds()
             ))
 
     results.sort(key=lambda x: x[2])
