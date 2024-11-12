@@ -47,3 +47,28 @@
 | rank       | two_point | 5525683.00 | 20.16s |
 | rank       | ordered   | 5553579.00 | 18.33s |
 | rank       | uniform   | 5942406.00 | 29.61s |
+
+## Numarul orașelor: 1084
+
+| Selection  | Crossover | Distance   | Time   |
+| ---------- | --------- | ---------- | ------ |
+| roulette   | uniform   | 5393724.00 | 24.35s |
+| roulette   | two_point | 5426878.00 | 24.45s |
+| roulette   | ordered   | 5466672.00 | 22.09s |
+| tournament | uniform   | 5660911.00 | 21.24s |
+| tournament | ordered   | 5722486.00 | 17.34s |
+| tournament | two_point | 5770137.00 | 19.60s |
+| rank       | ordered   | 7175529.00 | 17.94s |
+| rank       | two_point | 7184488.00 | 19.80s |
+| rank       | uniform   | 7555986.00 | 23.07s |
+
+## Numarul orașelor: 1084
+
+| Selection  | Crossover | Distance   | Time   |
+| ---------- | --------- | ---------- | ------ |
+| roulette   | ordered   | 5361038.00 | 24.46s |
+| roulette   | two_point | 5393539.00 | 26.64s |
+| roulette   | uniform   | 5456157.00 | 27.12s |
+| tournament | two_point | 5727417.00 | 22.22s |
+| tournament | ordered   | 5747396.00 | 20.28s |
+| tournament | uniform   | 5752970.00 | 23.89s |

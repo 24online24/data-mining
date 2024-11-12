@@ -92,7 +92,7 @@ def rank_selection(populatie, gen=None):
 selection_functions = {
     'roulette': roulette_wheel_selection,
     'tournament': tournament_selection,
-    'rank': rank_selection,
+    # 'rank': rank_selection,
 }
 
 
