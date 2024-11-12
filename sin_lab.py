@@ -3,7 +3,7 @@ import math
 import random
 
 
-class Cromozon:
+class Cromozom:
     def __init__(self, numar=None):
         self.numar = numar if numar else random.uniform(-10, 10)
         self.fitness = self.calculeaza_fitness()
@@ -16,7 +16,7 @@ class Cromozon:
 
     def crossover(self, p2):
         pondere = random.random()
-        return Cromozon(numar=pondere*self.numar + (1-pondere)*p2.numar)
+        return Cromozom(numar=pondere*self.numar + (1-pondere)*p2.numar)
 
     def mutatie(self, probab=0.01, raza=0.5):
         if random.random() < probab:
@@ -29,7 +29,7 @@ class Cromozon:
 
 
 def g_a(dim_pop, nr_gen):
-    populatie = [Cromozon() for _ in range(dim_pop)]
+    populatie = [Cromozom() for _ in range(dim_pop)]
 
     for gen in range(nr_gen):
         populatie = sorted(populatie, key=lambda x: x.fitness, reverse=True)
@@ -50,9 +50,9 @@ def g_a(dim_pop, nr_gen):
 
     print("-------------------------------")
 
-    best_cromozon = max(populatie, key=lambda x: x.fitness)
-    best_cromozon.afiseaza()
-    return best_cromozon.numar, best_cromozon.fitness
+    best_cromozom = max(populatie, key=lambda x: x.fitness)
+    best_cromozom.afiseaza()
+    return best_cromozom.numar, best_cromozom.fitness
 
 
 start_time = datetime.now()

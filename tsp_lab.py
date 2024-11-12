@@ -16,7 +16,7 @@ DISTANTE = np.array([
 ])
 
 
-class Cromozon:
+class Cromozom:
     def __init__(self, traseu=None):
         n = len(DISTANTE)
         self.traseu = traseu if traseu else random.sample(range(n), n)
@@ -49,7 +49,7 @@ class Cromozon:
                 traseu_copil[i] = p2.traseu[j]
                 folosite.add(p2.traseu[j])
 
-        return Cromozon(traseu=traseu_copil)
+        return Cromozom(traseu=traseu_copil)
 
     def mutatie(self, probab=0.01):
         lung = len(self.traseu)
@@ -65,7 +65,7 @@ class Cromozon:
 
 
 def g_a(dim_pop, nr_gen):
-    populatie = [Cromozon() for _ in range(dim_pop)]
+    populatie = [Cromozom() for _ in range(dim_pop)]
 
     for _ in range(nr_gen):
         populatie = sorted(populatie, key=lambda x: x.fitness, reverse=False)
@@ -85,9 +85,9 @@ def g_a(dim_pop, nr_gen):
 
     print("-------------------------------")
 
-    best_cromozon = min(populatie, key=lambda x: x.fitness)
-    best_cromozon.afiseaza()
-    return best_cromozon.traseu, best_cromozon.fitness
+    best_cromozom = min(populatie, key=lambda x: x.fitness)
+    best_cromozom.afiseaza()
+    return best_cromozom.traseu, best_cromozom.fitness
 
 
 start_time = datetime.now()
