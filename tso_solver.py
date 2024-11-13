@@ -71,28 +71,14 @@ def roulette_wheel_selection(populatie, gen=None):
             return cromozom
 
 
-def tournament_selection(populatie, gen=None, k=30):
+def tournament_selection(populatie, gen=None, k=40):
     turneu = random.sample(populatie, k)
     return min(turneu, key=lambda cromozom: cromozom.fitness)
-
-
-def rank_selection(populatie, gen=None):
-    n = len(populatie)
-    ranguri = [(n-i) for i in range(n)]
-    suma_rangurilor = sum(ranguri)
-    probabilitati = [rang / suma_rangurilor for rang in ranguri]
-    punct_selectie = random.random()
-    suma_cumulata = 0
-    for cromozom, probabilitate in zip(populatie, probabilitati):
-        suma_cumulata += probabilitate
-        if suma_cumulata >= punct_selectie:
-            return cromozom
 
 
 selection_functions = {
     'roulette': roulette_wheel_selection,
     'tournament': tournament_selection,
-    # 'rank': rank_selection,
 }
 
 
@@ -155,6 +141,46 @@ class Cromozom:
                 self.traseu[i], self.traseu[j] = self.traseu[j], self.traseu[i]
         self.fitness = self.calculeaza_fitness()
 
+    def local_search(self, max_iterations=20):
+        """Optimized 2-opt local search"""
+        improved = True
+        iterations = 0
+        best_fitness = self.fitness
+        d = DISTANTE
+        min_improvement = 0.1
+
+        while improved and iterations < max_iterations:
+            improved = False
+            window = min(20, len(self.traseu) // 4)
+
+            start_points = random.sample(range(1, len(self.traseu) - 2), min(20, len(self.traseu) // 2))
+
+            for i in start_points:
+                for j in range(i + 2, i + window):
+                    j = j % len(self.traseu)
+
+                    delta = (
+                        - d[self.traseu[i-1], self.traseu[i]]
+                        - d[self.traseu[j], self.traseu[(j+1) % len(self.traseu)]]
+                        + d[self.traseu[i-1], self.traseu[j]]
+                        + d[self.traseu[i], self.traseu[(j+1) % len(self.traseu)]]
+                    )
+
+                    if delta < -min_improvement:
+                        self.traseu[i:j+1] = self.traseu[i:j+1][::-1]
+                        self.fitness += delta
+                        improved = True
+                        break
+
+                if improved:
+                    break
+
+            iterations += 1
+            if self.fitness > best_fitness * 0.99:
+                break
+
+        return self.fitness < best_fitness
+
     def __str__(self):
         return f"Traseu: {self.traseu}, Distanță: {self.fitness}"
 
@@ -171,6 +197,10 @@ def g_a(dim_pop, nr_gen, selectie, crossover):
             copil2 = p2.crossover(p1)
             copil1.mutatie()
             copil2.mutatie()
+            if random.random() < 0.15:
+                copil1.local_search()
+            if random.random() < 0.15:
+                copil2.local_search()
             urm_pop += [copil1, copil2]
         populatie = urm_pop
 
@@ -188,13 +218,14 @@ if __name__ == '__main__':
     for selection in selection_functions:
         for crossover in crossover_functions:
             start_time = datetime.now()
-            best_traseu, dist = g_a(dim_pop=100, nr_gen=500, selectie=selection_functions[selection], crossover=crossover_functions[crossover])
+            best_traseu, dist = g_a(dim_pop=200, nr_gen=1000, selectie=selection_functions[selection], crossover=crossover_functions[crossover])
             results.append((
                 selection,
                 crossover,
                 dist,
                 (datetime.now() - start_time).total_seconds()
             ))
+            print('*')
 
     results.sort(key=lambda x: x[2])
     print("\nGenetic Algorithm Results")

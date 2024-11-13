@@ -5,16 +5,6 @@ import numpy as np
 import random
 
 
-def one_point_crossover(self, p2):
-    lung = len(self.traseu)
-    punct_crossover = random.randint(2, lung - 2)
-    traseu_copil = self.traseu[:punct_crossover]
-    for oras in p2.traseu:
-        if oras not in traseu_copil:
-            traseu_copil.append(oras)
-    return traseu_copil
-
-
 def two_point_crossover(self, p2):
     lung = len(self.traseu)
     st, dr = sorted(random.sample(range(lung), 2))
@@ -67,15 +57,10 @@ def ordered_crossover(self, p2):
 
 
 crossover_functions = {
-    'one_point': one_point_crossover,
     'two_point': two_point_crossover,
     'uniform': uniform_crossover,
     'ordered': ordered_crossover
 }
-
-
-def random_selection(populatie, gen=None):
-    return random.choice(populatie)
 
 
 def roulette_wheel_selection(populatie, gen=None):
@@ -88,55 +73,14 @@ def roulette_wheel_selection(populatie, gen=None):
             return cromozom
 
 
-def tournament_selection(populatie, gen=None, k=30):
+def tournament_selection(populatie, gen=None, k=40):
     turneu = random.sample(populatie, k)
     return min(turneu, key=lambda cromozom: cromozom.fitness)
 
 
-def rank_selection(populatie, gen=None):
-    n = len(populatie)
-    ranguri = [(n-i) for i in range(n)]
-    suma_rangurilor = sum(ranguri)
-    probabilitati = [rang / suma_rangurilor for rang in ranguri]
-    punct_selectie = random.random()
-    suma_cumulata = 0
-    for cromozom, probabilitate in zip(populatie, probabilitati):
-        suma_cumulata += probabilitate
-        if suma_cumulata >= punct_selectie:
-            return cromozom
-
-
-def boltzmann_selection(populatie, gen):
-    def normalizeaza_fitness(valori_fitness):
-        min_fitness = min(valori_fitness)
-        max_fitness = max(valori_fitness)
-        return [1 - (f - min_fitness) / (max_fitness - min_fitness) for f in valori_fitness]
-
-    n_gen = 100
-    t_init = 10
-    t_fin = 0.1
-    delta = (t_init-t_fin)/n_gen
-    temperatura = t_init - delta * gen
-    fitness_values = [cromozom.fitness for cromozom in populatie]
-    fitness_normalizat = normalizeaza_fitness(fitness_values)
-    probabilitati = [np.exp(-f / temperatura) for f in fitness_normalizat]
-
-    suma_probabilitati = sum(probabilitati)
-    probabilitati = [p / suma_probabilitati for p in probabilitati]
-    punct_selectie = random.random()
-    suma_cumulata = 0
-    for cromozom, probabilitate in zip(populatie, probabilitati):
-        suma_cumulata += probabilitate
-        if suma_cumulata >= punct_selectie:
-            return cromozom
-
-
 selection_functions = {
-    'random': random_selection,
     'roulette': roulette_wheel_selection,
     'tournament': tournament_selection,
-    'rank': rank_selection,
-    'boltzmann': boltzmann_selection
 }
 
 
@@ -199,6 +143,46 @@ class Cromozom:
                 self.traseu[i], self.traseu[j] = self.traseu[j], self.traseu[i]
         self.fitness = self.calculeaza_fitness()
 
+    def local_search(self, max_iterations=20):
+        """Optimized 2-opt local search"""
+        improved = True
+        iterations = 0
+        best_fitness = self.fitness
+        d = DISTANTE
+        min_improvement = 0.1
+
+        while improved and iterations < max_iterations:
+            improved = False
+            window = min(20, len(self.traseu) // 4)
+
+            start_points = random.sample(range(1, len(self.traseu) - 2), min(20, len(self.traseu) // 2))
+
+            for i in start_points:
+                for j in range(i + 2, i + window):
+                    j = j % len(self.traseu)
+
+                    delta = (
+                        - d[self.traseu[i-1], self.traseu[i]]
+                        - d[self.traseu[j], self.traseu[(j+1) % len(self.traseu)]]
+                        + d[self.traseu[i-1], self.traseu[j]]
+                        + d[self.traseu[i], self.traseu[(j+1) % len(self.traseu)]]
+                    )
+
+                    if delta < -min_improvement:
+                        self.traseu[i:j+1] = self.traseu[i:j+1][::-1]
+                        self.fitness += delta
+                        improved = True
+                        break
+
+                if improved:
+                    break
+
+            iterations += 1
+            if self.fitness > best_fitness * 0.99:
+                break
+
+        return self.fitness < best_fitness
+
     def __str__(self):
         return f"Traseu: {self.traseu}, Distanță: {self.fitness}"
 
@@ -215,6 +199,10 @@ def g_a(dim_pop, nr_gen, selectie, crossover):
             copil2 = p2.crossover(p1)
             copil1.mutatie()
             copil2.mutatie()
+            if random.random() < 0.15:
+                copil1.local_search()
+            if random.random() < 0.15:
+                copil2.local_search()
             urm_pop += [copil1, copil2]
         populatie = urm_pop
 
@@ -229,7 +217,7 @@ DISTANTE = citeste_instanta_tsp(file_path)
 def run_single_ga(args):
     selection, crossover = args
     start_time = datetime.now()
-    best_traseu, dist = g_a(dim_pop=100, nr_gen=500, selectie=selection_functions[selection], crossover=crossover_functions[crossover])
+    best_traseu, dist = g_a(dim_pop=200, nr_gen=1000, selectie=selection_functions[selection], crossover=crossover_functions[crossover])
     time = datetime.now() - start_time
     return selection, crossover, dist, time.total_seconds()
 
