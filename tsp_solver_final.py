@@ -13,7 +13,7 @@ def roulette_wheel_selection(populatie, gen=None):
             return cromozom
 
 
-def tournament_selection(populatie, gen=None, k=40):
+def tournament_selection(populatie, gen=None, k=20):
     turneu = random.sample(populatie, k)
     return min(turneu, key=lambda cromozom: cromozom.fitness)
 
@@ -158,7 +158,7 @@ def g_a(dim_pop, nr_gen, selectie):
     return best_cromozom.traseu, best_cromozom.fitness
 
 
-file_path = 'TSP/gil262.tsp'
+file_path = 'TSP/vm1084.tsp'
 DISTANTE = citeste_instanta_tsp(file_path)
 
 if __name__ == '__main__':
@@ -167,7 +167,7 @@ if __name__ == '__main__':
     execution_start = datetime.now()
     for selection in selection_functions:
         start_time = datetime.now()
-        best_traseu, dist = g_a(dim_pop=200, nr_gen=1000, selectie=selection_functions[selection])
+        best_traseu, dist = g_a(dim_pop=100, nr_gen=500, selectie=selection_functions[selection])
         results.append((
             selection,
             dist,
