@@ -14,7 +14,7 @@ def roulette_wheel_selection(populatie, gen=None):
             return cromozom
 
 
-def tournament_selection(populatie, gen=None, k=20):
+def tournament_selection(populatie, gen=None, k=40):
     turneu = random.sample(populatie, k)
     return min(turneu, key=lambda cromozom: cromozom.fitness)
 
@@ -148,9 +148,9 @@ def g_a(dim_pop, nr_gen, selectie):
             copil2 = p2.crossover(p1)
             copil1.mutatie()
             copil2.mutatie()
-            if random.random() < 0.15:
+            if random.random() < 0.10:
                 copil1.local_search()
-            if random.random() < 0.15:
+            if random.random() < 0.10:
                 copil2.local_search()
             urm_pop += [copil1, copil2]
         populatie = urm_pop
@@ -165,7 +165,7 @@ DISTANTE = citeste_instanta_tsp(file_path)
 
 def run_single_ga(selection):
     start_time = datetime.now()
-    best_traseu, dist = g_a(dim_pop=100, nr_gen=500, selectie=selection_functions[selection])
+    best_traseu, dist = g_a(dim_pop=200, nr_gen=1000, selectie=selection_functions[selection])
     time = datetime.now() - start_time
     return selection, dist, time.total_seconds()
 
