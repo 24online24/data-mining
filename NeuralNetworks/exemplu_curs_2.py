@@ -41,3 +41,19 @@ conf_matrix = confusion_matrix(y_test, y_pred_rounded)
 
 print("Confusion Matrix:")
 print(conf_matrix)
+
+false_positives, false_negatives = [0] * 10, [0] * 10
+for i in range(10):
+    for j in range(10):
+        if i != j:
+            false_negatives[i] += conf_matrix[i][j]
+            false_positives[i] += conf_matrix[j][i]
+
+for i in range(10):
+    tp = conf_matrix[i][i]
+    fn = false_negatives[i]
+    fp = false_positives[i]
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
+    f1 = 2 * precision * recall / (precision + recall)
+    print(f"{i}: Precision: {round(precision, 2)}, Recall: {round(recall, 2)}, F1: {round(f1, 2)}")
