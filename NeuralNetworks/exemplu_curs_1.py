@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Flatten
+from tensorflow.keras.layers import Dense, Flatten, Dropout
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.utils import to_categorical
 from sklearn.metrics import classification_report, confusion_matrix
@@ -27,8 +27,12 @@ y_test_cat = to_categorical(y_test, 10)
 
 model = Sequential([
     Flatten(input_shape=(28, 28)),
-    Dense(128, activation='relu'),
+    Dense(1024, activation='tanh'), # mai bun cu relu
+    Dropout(0.45),
+    Dense(256, activation='leaky_relu'), # mai bun cu relu
+    Dropout(0.3),
     Dense(64, activation='relu'),
+    Dropout(0.15),
     Dense(10, activation='softmax')
 ])
 
@@ -79,23 +83,23 @@ y_pred = model.predict(x_test)
 y_pred_classes = y_pred.argmax(axis=1)
 print(classification_report(y_test, y_pred_classes))
 
-conf_matrix = confusion_matrix(y_test, y_pred_classes)
+# conf_matrix = confusion_matrix(y_test, y_pred_classes)
 
-print("Confusion Matrix:")
-print(conf_matrix)
+# print("Confusion Matrix:")
+# print(conf_matrix)
 
-false_positives, false_negatives = [0] * 10, [0] * 10
-for i in range(10):
-    for j in range(10):
-        if i != j:
-            false_negatives[i] += conf_matrix[i][j]
-            false_positives[i] += conf_matrix[j][i]
+# false_positives, false_negatives = [0] * 10, [0] * 10
+# for i in range(10):
+#     for j in range(10):
+#         if i != j:
+#             false_negatives[i] += conf_matrix[i][j]
+#             false_positives[i] += conf_matrix[j][i]
 
-for i in range(10):
-    tp = conf_matrix[i][i]
-    fn = false_negatives[i]
-    fp = false_positives[i]
-    precision = tp / (tp + fp)
-    recall = tp / (tp + fn)
-    f1 = 2 * precision * recall / (precision + recall)
-    print(f"{i}: Precision: {round(precision, 2)}, Recall: {round(recall, 2)}, F1: {round(f1, 2)}")
+# for i in range(10):
+#     tp = conf_matrix[i][i]
+#     fn = false_negatives[i]
+#     fp = false_positives[i]
+#     precision = tp / (tp + fp)
+#     recall = tp / (tp + fn)
+#     f1 = 2 * precision * recall / (precision + recall)
+#     print(f"{i}: Precision: {round(precision, 2)}, Recall: {round(recall, 2)}, F1: {round(f1, 2)}")
