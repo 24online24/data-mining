@@ -3,7 +3,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.utils import to_categorical
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -26,17 +26,16 @@ y_train = to_categorical(y_train, 10)
 y_test_cat = to_categorical(y_test, 10)
 
 model = Sequential([
-  Flatten(input_shape=(28, 28)),
-  Dense(128, activation='relu'),
-  Dense(64, activation='relu'),
-  Dense(10, activation='softmax')
+    Flatten(input_shape=(28, 28)),
+    Dense(128, activation='relu'),
+    Dense(64, activation='relu'),
+    Dense(10, activation='softmax')
 ])
 
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'Precision', 'Recall'])
 
-history = model.fit(x_train, y_train, epochs = 10, batch_size=32, validation_split=0.1)
+history = model.fit(x_train, y_train, epochs=10, batch_size=32, validation_split=0.1)
 
-import matplotlib.pyplot as plt
 
 plt.plot(history.history['accuracy'], label='Training Accuracy')
 plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
@@ -45,3 +44,42 @@ plt.xlabel('Epoch')
 plt.ylabel('Accuracy')
 plt.legend(loc="lower right")
 plt.show()
+
+plt.plot(history.history['Precision'], label='Training Precision')
+plt.plot(history.history['val_Precision'], label='Validation Precision')
+plt.title('Model Precision')
+plt.xlabel('Epoch')
+plt.ylabel('Precision')
+plt.legend(loc="lower right")
+plt.show()
+
+plt.plot(history.history['Recall'], label='Trainig Recall')
+plt.plot(history.history['val_Recall'], label='Validation Recall')
+plt.title('Model Recall')
+plt.xlabel('Epoch')
+plt.ylabel
+plt.legend(loc="lower right")
+plt.show()
+
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.title('Model Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend(loc="upper right")
+plt.show()
+
+test_loss, test_accuracy, test_precision, test_recall = model.evaluate(x_test, y_test_cat)
+print(f"Test Loss: {test_loss}")
+print(f"Test Accuracy: {test_accuracy}")
+print(f"Test Precision: {test_precision}")
+print(f"Test Recall: {test_recall}")
+
+y_pred = model.predict(x_test)
+y_pred_classes = y_pred.argmax(axis=1)
+print(classification_report(y_test, y_pred_classes))
+
+conf_matrix = confusion_matrix(y_test, y_pred_classes)
+
+print("Confusion Matrix:")
+print(conf_matrix)
