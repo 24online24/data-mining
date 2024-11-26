@@ -149,7 +149,7 @@ def g_a(dim_pop, nr_gen):
     return best_cromozom.traseu, best_cromozom.fitness
 
 
-file_path = 'TSP/vm1084.tsp'
+file_path = 'TSP/u724.tsp'
 DISTANTE = citeste_instanta_tsp(file_path)
 
 if __name__ == '__main__':
