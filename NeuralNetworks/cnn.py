@@ -3,6 +3,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropou
 from tensorflow.keras.datasets import cifar10
 from sklearn.metrics import classification_report
 from tensorflow.keras.utils import to_categorical
+import time
 
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
 
@@ -27,12 +28,16 @@ model = Sequential([
 
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
+start = time.time()
 history = model.fit(x_train, y_train, epochs=10, batch_size=64, validation_data=(x_test, y_test))
+print(f"Training took: {time.time() - start:.2f} seconds")
 
 test_loss, test_accuracy = model.evaluate(x_test, y_test, verbose=2)
 print(f"\nTest Loss: {test_loss:.4f}, Test Accuracy: {test_accuracy:.4f}")
 
+start = time.time()
 y_pred = model.predict(x_test)
+print(f"Prediction took: {time.time() - start:.2f} seconds")
 y_pred_classes = y_pred.argmax(axis=1)
 y_true_classes = y_test.argmax(axis=1)
 print(classification_report(y_true_classes, y_pred_classes))
