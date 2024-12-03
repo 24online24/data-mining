@@ -3,7 +3,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropou
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.callbacks import LearningRateScheduler
+from tensorflow.keras.callbacks import EarlyStopping
 import time
 
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
@@ -16,27 +16,16 @@ y_train = to_categorical(y_train, 10)
 y_test = to_categorical(y_test, 10)
 
 datagen = ImageDataGenerator(
-    rotation_range=15,
-    width_shift_range=0.1,
-    height_shift_range=0.1,
     horizontal_flip=True,
-    zoom_range=0.2
+    width_shift_range=0.1
 )
 datagen.fit(x_train)
 
-
-def lr_schedule(epoch):
-    initial_lr = 0.001
-    if epoch > 75:
-        return initial_lr * 0.01
-    elif epoch > 50:
-        return initial_lr * 0.1
-    return initial_lr
-
-
 model = Sequential([
-    Conv2D(32, (3, 3), padding='same', activation='relu', input_shape=(32, 32, 3)),
+    Conv2D(16, (3, 3), padding='same', activation='relu', input_shape=(32, 32, 3)),
     BatchNormalization(),
+    MaxPooling2D((2, 2)),
+
     Conv2D(32, (3, 3), padding='same', activation='relu'),
     BatchNormalization(),
     MaxPooling2D((2, 2)),
@@ -44,33 +33,26 @@ model = Sequential([
 
     Conv2D(64, (3, 3), padding='same', activation='relu'),
     BatchNormalization(),
-    Conv2D(64, (3, 3), padding='same', activation='relu'),
-    BatchNormalization(),
     MaxPooling2D((2, 2)),
-    Dropout(0.25),
-
-    Conv2D(128, (3, 3), padding='same', activation='relu'),
-    BatchNormalization(),
-    Conv2D(128, (3, 3), padding='same', activation='relu'),
-    BatchNormalization(),
-    MaxPooling2D((2, 2)),
-    Dropout(0.25),
 
     Flatten(),
-    Dense(512, activation='relu'),
-    BatchNormalization(),
+    Dense(128, activation='relu'),
     Dropout(0.5),
     Dense(10, activation='softmax')
 ])
 
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
+callbacks = [
+    EarlyStopping(monitor='val_accuracy', patience=3, restore_best_weights=True)
+]
+
 start = time.time()
 history = model.fit(
-    datagen.flow(x_train, y_train, batch_size=64),
-    epochs=100,
+    datagen.flow(x_train, y_train, batch_size=256),
+    epochs=15,
     validation_data=(x_test, y_test),
-    callbacks=[LearningRateScheduler(lr_schedule)]
+    callbacks=callbacks
 )
 print(f"Training took: {time.time() - start:.2f} seconds")
 
