@@ -19,12 +19,7 @@ client = Client(secrets['apiKey'], secrets['secretKey'])
 
 historical = client.get_historical_klines('BTCEUR', Client.KLINE_INTERVAL_1HOUR, '12 Nov 2024')
 
-
 close_values = [kline[4] for kline in historical]
-
-len(close_values)
-
-
 data = np.array(close_values, dtype=np.float64).reshape(-1, 1)
 
 
