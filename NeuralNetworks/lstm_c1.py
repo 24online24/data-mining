@@ -1,9 +1,9 @@
-from sklearn.metrics import mean_absolute_error, mean_squared_error
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.preprocessing import MinMaxScaler
-from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
+from tensorflow.keras.models import Sequential
 
 np.random.seed(42)
 
@@ -54,6 +54,6 @@ plt.show()
 mae = mean_absolute_error(y_test_rescaled, predictions_rescaled)
 mse = mean_squared_error(y_test_rescaled, predictions_rescaled)
 rmse = np.sqrt(mse)
-print(f'MAE: {mae}')
-print(f'MSE: {mse}')
-print(f'RMSE: {rmse}')
+print('MAE: ', mae)
+print('MSE: ', mse)
+print('RMSE: ', rmse)
