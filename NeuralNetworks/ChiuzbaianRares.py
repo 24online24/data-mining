@@ -75,4 +75,4 @@ print('RMSE: ', rmse)
 
 next_hour = model.predict(X[-1:])
 next_hour_rescaled = scaler.inverse_transform(next_hour.reshape(-1, 1))
-print('\nClose ora curentă: ', next_hour_rescaled)
+print('\nClose ora curentă: ', next_hour_rescaled[0][0])

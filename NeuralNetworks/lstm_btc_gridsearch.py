@@ -1,6 +1,5 @@
 import json
 
-import matplotlib.pyplot as plt
 import numpy as np
 from binance import Client
 from sklearn.metrics import mean_absolute_error, mean_squared_error
@@ -61,18 +60,6 @@ predictions = model.predict(X_test)
 predictions_rescaled = scaler.inverse_transform(predictions.reshape(-1, 1))
 y_test_rescaled = scaler.inverse_transform(y_test.reshape(-1, 1))
 
-plt.plot(y_test_rescaled, label='True')
-plt.plot(predictions_rescaled, label='Predicted')
-plt.legend()
-plt.show()
-
 mae = mean_absolute_error(y_test_rescaled, predictions_rescaled)
 mse = mean_squared_error(y_test_rescaled, predictions_rescaled)
 rmse = np.sqrt(mse)
-print('MAE: ', mae)
-print('MSE: ', mse)
-print('RMSE: ', rmse)
-
-next_hour = model.predict(X[-1:])
-next_hour_rescaled = scaler.inverse_transform(next_hour.reshape(-1, 1))
-print('\nClose ora curentă: ', next_hour_rescaled)
