@@ -1,3 +1,6 @@
 .venv
 __pycache__
 NeuralNetworks/secrets.json
+NLP/aclImdb_v1.tar.gz
+NLP/aclImdb_v1.tar
+NLP/aclImdb
